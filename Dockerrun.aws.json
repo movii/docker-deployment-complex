@@ -1,0 +1,39 @@
+{
+  "AWSEBDockerVersion": 2,
+  "containerDefinitions": [
+    {
+      "name": "client",
+      "image": "movii/docker-deplyment-complex-client",
+      "hostname": "client",
+      "essential": false
+    },
+    {
+      "name": "server",
+      "image": "movii/docker-deplyment-complex-server",
+      "hostname": "api",
+      "essential": false
+    },
+    {
+      "name": "worker",
+      "image": "movii/docker-deplyment-complex-worker",
+      "hostname": "worker",
+      "essential": false
+    },
+    {
+      "name": "nginx",
+      "image": "movii/docker-deplyment-complex-nginx",
+      "hostname": "nginx",
+      "essential": true,
+      "portMappings": [
+        {
+          "hostPort": 80,
+          "containerPort": 80
+        }
+      ],
+      "links": [
+        "client",
+        "server"
+      ]
+    }
+  ]
+}
