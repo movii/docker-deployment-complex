@@ -1,0 +1,33 @@
+language: ruby
+
+rvm:
+ - 2.5
+
+sudo: required
+
+services:
+  - docker
+
+before_install:
+  - docker build --tag movii/react-test --file ${TRAVIS_BUILD_DIR}/client/Dockerfile.dev ${TRAVIS_BUILD_DIR}/client
+
+script:
+  - docker run movii/react-test npm run test -- --coverage
+
+after_success:
+  # After (all) test successfully past,
+  # build our images
+  - docker build -t movii/docker-deplyment-complex-client ./client
+  - docker build -t movii/docker-deplyment-complex-nginx ./nginx
+  - docker build -t movii/docker-deplyment-complex-server ./server
+  - docker build -t movii/docker-deplyment-complex-worker ./worker
+
+  # Login in to the docker cli
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
+  # Take those images and push them to docker hub
+  - docker push movii/docker-deplyment-complex-client
+  - docker push movii/docker-deplyment-complex-nginx
+  - docker push movii/docker-deplyment-complex-server
+  - docker push movii/docker-deplyment-complex-worker
+
+
